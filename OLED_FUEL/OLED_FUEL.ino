@@ -63,7 +63,6 @@ static const unsigned char PROGMEM logo16_glcd_bmp[] =
 #if (SSD1306_LCDHEIGHT != 64)
 #error("Height incorrect, please fix Adafruit_SSD1306.h!");
 #endif
-
 void setup()   {                
   Serial.begin(9600);
 
@@ -86,9 +85,12 @@ void setup()   {
   DrawTitles();
   
   Display.drawRect(2,30,120,34,WHITE);
+  DrawBar(256);
+  //Display.drawPixel(35, 60, WHITE);
+
   Display.display();
 //LCD_progress_bar (30,50,1,100);
-}
+ }
 
 
 void loop() {
@@ -112,6 +114,32 @@ void DrawTitles(void) {
 
 }
 
+void DrawBar(int inputReading){
+  double readingAsPercentage = ((double)inputReading/512);
+  double barPercentage = 118*readingAsPercentage;
+  Serial.print("Reading:");
+  printDouble(readingAsPercentage, 10);
+  Serial.print(" Bar:");
+  printDouble(barPercentage, 10);
+
+    
+  Display.fillRect(4,33,barPercentage,28,WHITE);  
+}
+
+void printDouble( double val, unsigned int precision){
+// prints val with number of decimal places determine by precision
+// NOTE: precision is 1 followed by the number of zeros for the desired number of decimial places
+// example: printDouble( 3.1415, 100); // prints 3.14 (two decimal places)
+
+   Serial.print (int(val));  //prints the int part
+   Serial.print("."); // print the decimal point
+   unsigned int frac;
+   if(val >= 0)
+       frac = (val - int(val)) * precision;
+   else
+       frac = (int(val)- val ) * precision;
+   Serial.println(frac,DEC) ;
+} 
 /*
 void LCD_progress_bar (int row, int var, int minVal, int maxVal)
 {
@@ -148,4 +176,6 @@ void LCD_progress_bar (int row, int var, int minVal, int maxVal)
     Display.write (1022);
   }
 }
+
 */
+
